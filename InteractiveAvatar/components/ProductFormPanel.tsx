@@ -4,31 +4,42 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const productImages = [
-    {
-      src: "/images/product1.jpg",
-      link: "https://example.com/product1",
-      alt: "Producto 1",
-      title: "Producto 1",
-      description: "Descripción del Producto 1",
-    },
-    {
-      src: "/images/product2.jpg",
-      link: "https://example.com/product2",
-      alt: "Producto 2",
-      title: "Producto 2",
-      description: "Descripción del Producto 2",
-    },
-    {
-      src: "/images/product3.jpg",
-      link: "https://example.com/product3",
-      alt: "Producto 3",
-      title: "Producto 3",
-      description: "Descripción del Producto 3",
-    },
-  ];
+export type ProductSelection = {
+  title: string;
+  description: string;
+  color: string;
+  size: string;
+};
 
-export default function ProductFormPanel() {
+interface ProductFormPanelProps {
+  onAdd?: (product: ProductSelection) => void;
+}
+
+const productImages = [
+  {
+    src: "/images/product1.jpg",
+    link: "https://example.com/product1",
+    alt: "Producto 1",
+    title: "Producto 1",
+    description: "Descripción del Producto 1",
+  },
+  {
+    src: "/images/product2.jpg",
+    link: "https://example.com/product2",
+    alt: "Producto 2",
+    title: "Producto 2",
+    description: "Descripción del Producto 2",
+  },
+  {
+    src: "/images/product3.jpg",
+    link: "https://example.com/product3",
+    alt: "Producto 3",
+    title: "Producto 3",
+    description: "Descripción del Producto 3",
+  },
+];
+
+export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -44,40 +55,39 @@ export default function ProductFormPanel() {
       {/* Miniaturas como slider básico */}
       <div className="flex gap-2 overflow-x-auto">
         {productImages.map((item, idx) => (
-            <div
+          <div
             key={idx}
             onMouseEnter={() => {
-                setTitle(item.title);
-                setDescription(item.description);
+              setTitle(item.title);
+              setDescription(item.description);
             }}
-            >
-            <Link href={item.link} legacyBehavior>
-                <a target="_blank" rel="noopener noreferrer">
+          >
+            <Link legacyBehavior href={item.link}>
+              <a href={item.link} rel="noopener noreferrer" target="_blank">
                 <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={80}
-                    height={80}
-                    className="rounded-lg hover:scale-105 transition-transform"
+                  alt={item.alt}
+                  className="rounded-lg hover:scale-105 transition-transform"
+                  height={80}
+                  src={item.src}
+                  width={80}
                 />
-                </a>
+              </a>
             </Link>
-            </div>
+          </div>
         ))}
-        </div>
-
+      </div>
 
       <input
-        type="text"
-        placeholder="Nombre del producto"
         className="px-3 py-2 rounded bg-gray-800 border border-gray-700"
+        placeholder="Nombre del producto"
+        type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
 
       <textarea
-        placeholder="Descripción"
         className="px-3 py-2 rounded bg-gray-800 border border-gray-700"
+        placeholder="Descripción"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -104,7 +114,17 @@ export default function ProductFormPanel() {
         ))}
       </select>
 
-      <button className="mt-2 bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded">
+      <button
+        className="mt-2 bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded"
+        onClick={() =>
+          onAdd?.({
+            title,
+            description,
+            color: selectedColor,
+            size: selectedSize,
+          })
+        }
+      >
         Agregar al Carrito
       </button>
     </div>
