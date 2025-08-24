@@ -5,6 +5,7 @@ const connectDB = require('./utils/db');
 const userRoutes = require('./routes/userRoutes');
 const sessionRoutes = require("./routes/sessionRoutes");
 const dataSessionRoutes = require("./routes/dataSessionRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const cors = require('cors');
 
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(cors());
 app.use('/usuarios', userRoutes);
 app.use("/session", sessionRoutes);
 app.use("/data-session", dataSessionRoutes);
+app.use("/orders", orderRoutes);
 
 connectDB();
 
