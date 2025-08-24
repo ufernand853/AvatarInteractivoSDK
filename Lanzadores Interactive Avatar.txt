@@ -1,0 +1,27 @@
+Interactive Avatar 
+
+C:\Users\DELL\Desktop\Proyectos\AvatarInteractivoSDK
+
+
+C:\Users\DELL\Desktop\Proyectos\AvatarInteractivoSDK\BackendUsuarios
+Puerto 5000
+node app.js 
+
+C:\Users\DELL\Desktop\Proyectos\AvatarInteractivoSDK\FrontendUsuarios
+Puerto 4000
+npm start
+
+C:\Users\DELL\Desktop\Proyectos\AvatarInteractivoSDK\InteractiveAvatar
+Puerto 3000
+npx next dev
+
+
+# Config file for mosquitto
+
+listener 1883
+protocol mqtt
+
+listener 9001
+protocol websockets
+
+allow_anonymous true

@@ -1,0 +1,218 @@
+import type { StartAvatarResponse } from "@heygen/streaming-avatar";
+
+import StreamingAvatar, {
+  AvatarQuality,
+  StreamingEvents,
+  TaskMode,
+  TaskType,
+  VoiceEmotion,
+} from "@heygen/sssssstreaming-avatar";
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Select,
+  SelectItem,
+  Spinner,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@nextui-org/react";
+import { useEffect, useRef, useState } from "react";
+import { AVATARS, STT_LANGUAGE_LIST } from "@/app/lib/constants";
+
+// Definimos la estructura de la lista de frases
+interface PhraseItem {
+  phrase: string;
+  url: string;
+}
+
+export default function InteractiveAvatar() {
+  const [isLoadingSession, setIsLoadingSession] = useState(false);
+  const [stream, setStream] = useState<MediaStream>();
+  const [knowledgeId, setKnowledgeId] = useState<string>("");
+  const [avatarId, setAvatarId] = useState<string>("");
+  const [language, setLanguage] = useState<string>("en");
+
+  const [phraseList, setPhraseList] = useState<PhraseItem[]>([]);
+  const [newPhrase, setNewPhrase] = useState<string>("");
+  const [newUrl, setNewUrl] = useState<string>("");
+
+  const [data, setData] = useState<StartAvatarResponse>();
+  const mediaStream = useRef<HTMLVideoElement>(null);
+  const avatar = useRef<StreamingAvatar | null>(null);
+
+  async function fetchAccessToken() {
+    try {
+      const response = await fetch("/api/get-access-token", { method: "POST" });
+      return await response.text();
+    } catch (error) {
+      console.error("Error fetching access token:", error);
+      return "";
+    }
+  }
+
+  async function startSession() {
+    setIsLoadingSession(true);
+    const newToken = await fetchAccessToken();
+
+    avatar.current = new StreamingAvatar({ token: newToken });
+
+    avatar.current.on(StreamingEvents.AVATAR_TALKING_MESSAGE, (message) => {
+      console.log("Avatar talking message:", message.detail.message);
+      checkForTriggerWord(message.detail.message);
+    });
+
+    avatar.current.on(StreamingEvents.USER_TALKING_MESSAGE, (message) => {
+      console.log("User talking message:", message.detail.message);
+      checkForTriggerWord(message.detail.message);
+    });
+
+    setIsLoadingSession(false);
+  }
+
+  function checkForTriggerWord(message: string) {
+    for (const { phrase, url } of phraseList) {
+      if (message.toLowerCase().includes(phrase.toLowerCase())) {
+        window.open(url, "_blank"); // Abre la URL en una nueva pestaña
+        return;
+      }
+    }
+  }
+
+  const addPhrase = () => {
+    if (newPhrase && newUrl) {
+      setPhraseList([...phraseList, { phrase: newPhrase, url: newUrl }]);
+      setNewPhrase("");
+      setNewUrl("");
+    }
+  };
+
+  return (
+    <div className="w-full flex flex-col gap-4 p-6">
+      <Card>
+        <CardBody className="flex flex-col justify-center items-center gap-4">
+          {!stream && !isLoadingSession ? (
+            <Button
+              className="bg-indigo-500 text-white"
+              onPress={startSession} // Cambié onClick por onPress
+              aria-label="Start avatar session"
+            >
+              Start session
+            </Button>
+          ) : (
+            <Spinner color="default" size="lg" />
+          )}
+
+          {stream && (
+            <div className="w-full flex justify-center items-center">
+              <video ref={mediaStream} autoPlay playsInline className="w-full h-full object-contain">
+                <track kind="captions" />
+              </video>
+              <Button
+                onPress={() => avatar.current?.stopAvatar()} // Cambié onClick por onPress
+                aria-label="End avatar session"
+              >
+                End Session
+              </Button>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      <div className="p-4 bg-gray-100 rounded-lg">
+        <h2 className="text-lg font-semibold mb-2">Configuración del Avatar</h2>
+        <div className="flex flex-col gap-2">
+          <Input
+            placeholder="Enter a custom Knowledge ID"
+            value={knowledgeId}
+            onChange={(e) => setKnowledgeId(e.target.value)}
+            aria-label="Knowledge ID"
+          />
+          <Input
+            placeholder="Enter a custom Avatar ID"
+            value={avatarId}
+            onChange={(e) => setAvatarId(e.target.value)}
+            aria-label="Avatar ID"
+          />
+          <Select
+            placeholder="Or select one from these example avatars"
+            size="md"
+            onChange={(e) => setAvatarId(e.target.value)}
+            aria-label="Select Avatar"
+          >
+            {AVATARS.map((avatar) => (
+              <SelectItem key={avatar.avatar_id} textValue={avatar.avatar_id}>
+                {avatar.name}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            label="Select language"
+            placeholder="Select language"
+            className="max-w-xs"
+            selectedKeys={[language]}
+            onChange={(e) => setLanguage(e.target.value)}
+            aria-label="Select Language"
+          >
+            {STT_LANGUAGE_LIST.map((lang) => (
+              <SelectItem key={lang.key}>
+                {lang.label}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+      </div>
+
+      <div className="p-4 bg-gray-100 rounded-lg mt-4">
+        <h2 className="text-lg font-semibold mb-2">Lista de Frases y URLs</h2>
+        <div className="flex gap-2 mb-2">
+          <Input
+            placeholder="Frase clave"
+            value={newPhrase}
+            onChange={(e) => setNewPhrase(e.target.value)}
+            aria-label="New Phrase"
+          />
+          <Input
+            placeholder="URL asociada"
+            value={newUrl}
+            onChange={(e) => setNewUrl(e.target.value)}
+            aria-label="New URL"
+          />
+          <Button onPress={addPhrase} color="primary" aria-label="Add Phrase">
+            Agregar
+          </Button>
+        </div>
+        <Table aria-label="Lista de Frases">
+          <TableHeader>
+            <TableColumn>Frase</TableColumn>
+            <TableColumn>URL</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {phraseList.length > 0 ? (
+              phraseList.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.phrase}</TableCell>
+                  <TableCell>
+                    <a href={item.url} target="_blank" rel="noopener noreferrer">
+                      {item.url}
+                    </a>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell> - </TableCell> 
+                <TableCell> No hay frases registradas </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
