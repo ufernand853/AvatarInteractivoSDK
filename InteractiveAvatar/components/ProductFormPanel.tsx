@@ -15,7 +15,7 @@ interface ProductFormPanelProps {
   onAdd?: (product: ProductSelection) => void;
 }
 
-const productImages = [
+export const productImages = [
   {
     src: "/images/product1.jpg",
     link: "https://example.com/product1",
@@ -47,6 +47,12 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
 
   const colors = ["Rojo", "Verde", "Azul"];
   const sizes = ["S", "M", "L", "XL"];
+  const colorMap: Record<string, string> = {
+    Rojo: "red",
+    Verde: "green",
+    Azul: "blue",
+  };
+  const cssColor = colorMap[selectedColor] || "transparent";
 
   return (
     <div className="w-[300px] p-4 bg-gray-900 text-white rounded-xl shadow-lg flex flex-col gap-4">
@@ -113,6 +119,15 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
           <option key={size}>{size}</option>
         ))}
       </select>
+
+      {title && (
+        <div className="p-2 border rounded" style={{ borderColor: cssColor }}>
+          <p className="font-bold">{title}</p>
+          {description && <p className="text-sm">{description}</p>}
+          {selectedColor && <p className="text-sm">Color: {selectedColor}</p>}
+          {selectedSize && <p className="text-sm">Tamaño: {selectedSize}</p>}
+        </div>
+      )}
 
       <button
         className="mt-2 bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded"
