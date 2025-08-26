@@ -15,7 +15,7 @@ interface ProductFormPanelProps {
   onAdd?: (product: ProductSelection) => void;
 }
 
-const productImages = [
+export const productImages = [
   {
     src: "/images/product1.jpg",
     link: "https://example.com/product1",

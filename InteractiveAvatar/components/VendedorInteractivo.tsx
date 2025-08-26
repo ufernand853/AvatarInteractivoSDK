@@ -6,9 +6,13 @@ import StreamingAvatar, {
   StreamingEvents,
 } from "@heygen/streaming-avatar";
 
-import ProductFormPanel, { ProductSelection } from "./ProductFormPanel";
+import ProductFormPanel, {
+  ProductSelection,
+  productImages,
+} from "./ProductFormPanel";
 
 import { detectarUrlDesdeMensaje } from "@/app/utils/detectarUrlDesdeMensaje";
+import { STT_LANGUAGE_LIST } from "@/app/lib/constants";
 
 interface CartItem extends ProductSelection {}
 
@@ -19,6 +23,8 @@ export default function VendedorInteractivo() {
   const avatar = useRef<StreamingAvatar | null>(null);
   const [showPanel, setShowPanel] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  const [language, setLanguage] = useState("es");
   const colorMap: Record<string, string> = {
     Rojo: "red",
     Verde: "green",
@@ -63,9 +69,16 @@ export default function VendedorInteractivo() {
       }
     });
 
+    const productInfo = productImages
+      .map((p) => `${p.title}: ${p.description}`)
+      .join(". ");
+    const knowledgeBase = `Eres un vendedor que ofrece los siguientes productos: ${productInfo}. Ayuda al cliente a escoger de forma cordial.`;
+
     const res = await avatar.current.createStartAvatar({
       quality: AvatarQuality.Low,
       avatarName: "Ann_Therapist_public",
+      language,
+      knowledgeBase,
     });
 
     setData(res);
@@ -86,6 +99,7 @@ export default function VendedorInteractivo() {
       setCart([]);
       setShowPanel(false);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("Error creating order", e);
     }
   };
@@ -101,14 +115,29 @@ export default function VendedorInteractivo() {
         >
           <track kind="captions" />
         </video>
-        {!data && (
-          <button
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
-            onClick={startSession}
+
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <select
+            className="px-2 py-1 border border-gray-300 rounded"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+
           >
-            Iniciar sesión
-          </button>
-        )}
+            {STT_LANGUAGE_LIST.map((lang) => (
+              <option key={lang.key} value={lang.key}>
+                {lang.label}
+              </option>
+            ))}
+          </select>
+          {!data && (
+            <button
+              className="px-4 py-2 bg-green-600 text-white rounded"
+              onClick={startSession}
+            >
+              Iniciar sesión
+            </button>
+          )}
+        </div>
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
       {cart.length > 0 && (
