@@ -9,7 +9,9 @@ import StreamingAvatar, {
 import ProductFormPanel, {
   ProductSelection,
   productImages,
+
   COLOR_MAP,
+
 } from "./ProductFormPanel";
 
 import { detectarUrlDesdeMensaje } from "@/app/utils/detectarUrlDesdeMensaje";
@@ -26,6 +28,7 @@ export default function VendedorInteractivo() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [language, setLanguage] = useState("es");
 
+
   const availableColors = Object.keys(COLOR_MAP).join(", ");
   const availableSizes = ["S", "M", "L", "XL"].join(", ");
   const productInfo = productImages
@@ -36,6 +39,7 @@ export default function VendedorInteractivo() {
     .join(" ");
   const defaultKnowledgeBase = [
     `Eres un vendedor que ofrece los siguientes productos: ${productInfo}`,
+
     "Ayuda al cliente a escoger de forma cordial.",
   ].join(" ");
   const [knowledgeBaseText, setKnowledgeBaseText] =
@@ -79,11 +83,20 @@ export default function VendedorInteractivo() {
       }
     });
 
+    const productInfo = productImages
+      .map((p) => `${p.title}: ${p.description}`)
+      .join(". ");
+    const knowledgeBase = `Eres un vendedor que ofrece los siguientes productos: ${productInfo}. Ayuda al cliente a escoger de forma cordial.`;
+
+    setKnowledgeBaseText(knowledgeBase);
+
     const res = await avatar.current.createStartAvatar({
       quality: AvatarQuality.Low,
       avatarName: "Ann_Therapist_public",
       language,
+
       knowledgeBase: knowledgeBaseText,
+
     });
 
     setData(res);
@@ -91,8 +104,10 @@ export default function VendedorInteractivo() {
   }
 
   async function reloadKnowledgeBase() {
+
     await avatar.current?.stopAvatar();
     await avatar.current?.closeVoiceChat();
+
     setData(undefined);
     await startSession();
   }
@@ -147,6 +162,7 @@ export default function VendedorInteractivo() {
               Iniciar sesión
             </button>
           )}
+
           {data && (
             <button
               className="px-4 py-2 bg-blue-600 text-white rounded"
@@ -157,6 +173,7 @@ export default function VendedorInteractivo() {
           )}
         </div>
         <textarea
+
           className="mt-4 max-w-xl w-full text-xs text-gray-800 p-2 border rounded bg-gray-100"
           rows={4}
           value={knowledgeBaseText}
@@ -173,6 +190,7 @@ export default function VendedorInteractivo() {
                 <span
                   className="w-3 h-3 rounded-full"
                   style={{
+
                     backgroundColor: COLOR_MAP[item.color] || "transparent",
                   }}
                 />
