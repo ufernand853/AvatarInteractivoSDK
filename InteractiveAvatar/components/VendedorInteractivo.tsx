@@ -27,7 +27,18 @@ export default function VendedorInteractivo() {
   const [showPanel, setShowPanel] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [language, setLanguage] = useState("es");
-  const [knowledgeBaseText, setKnowledgeBaseText] = useState("");
+
+
+  const productInfo = productImages
+    .map((p) => `${p.title}: ${p.description}`)
+    .join(". ");
+  const defaultKnowledgeBase = [
+    `Eres un vendedor que ofrece los siguientes productos: ${productInfo}.`,
+    "Ayuda al cliente a escoger de forma cordial.",
+  ].join(" ");
+  const [knowledgeBaseText, setKnowledgeBaseText] =
+    useState(defaultKnowledgeBase);
+
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -78,11 +89,20 @@ export default function VendedorInteractivo() {
       quality: AvatarQuality.Low,
       avatarName: "Ann_Therapist_public",
       language,
-      knowledgeBase,
+
+      knowledgeBase: knowledgeBaseText,
+
     });
 
     setData(res);
     await avatar.current.startVoiceChat({ isInputAudioMuted: false });
+  }
+
+  async function reloadKnowledgeBase() {
+    await avatar.current?.stop();
+    await avatar.current?.close();
+    setData(undefined);
+    await startSession();
   }
 
   const handleAddProduct = (product: CartItem) => {
@@ -135,12 +155,22 @@ export default function VendedorInteractivo() {
               Iniciar sesión
             </button>
           )}
+
+          {data && (
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+              onClick={reloadKnowledgeBase}
+            >
+              Actualizar conocimiento
+            </button>
+          )}
         </div>
-        {knowledgeBaseText && (
-          <div className="mt-4 max-w-xl text-xs text-gray-700 whitespace-pre-line p-2 border rounded">
-            {knowledgeBaseText}
-          </div>
-        )}
+        <textarea
+          className="mt-4 max-w-xl w-full text-xs text-gray-700 p-2 border rounded"
+          rows={4}
+          value={knowledgeBaseText}
+          onChange={(e) => setKnowledgeBaseText(e.target.value)}
+        />
 
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
