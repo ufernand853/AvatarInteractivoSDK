@@ -9,7 +9,9 @@ import StreamingAvatar, {
 import ProductFormPanel, {
   ProductSelection,
   productImages,
+
   COLOR_MAP,
+
 } from "./ProductFormPanel";
 
 import { detectarUrlDesdeMensaje } from "@/app/utils/detectarUrlDesdeMensaje";
@@ -139,6 +141,7 @@ export default function VendedorInteractivo() {
             {knowledgeBaseText}
           </div>
         )}
+
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
       {cart.length > 0 && (
@@ -150,6 +153,7 @@ export default function VendedorInteractivo() {
                 <span
                   className="w-3 h-3 rounded-full"
                   style={{
+
                     backgroundColor: COLOR_MAP[item.color] || "transparent",
                   }}
                 />

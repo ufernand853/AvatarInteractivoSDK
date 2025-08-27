@@ -53,7 +53,9 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
 
   const colors = Object.keys(COLOR_MAP);
   const sizes = ["S", "M", "L", "XL"];
+
   const cssColor = COLOR_MAP[selectedColor] || "transparent";
+
 
   return (
     <div className="w-[300px] p-4 bg-gray-900 text-white rounded-xl shadow-lg flex flex-col gap-4">
