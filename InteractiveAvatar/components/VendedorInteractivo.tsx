@@ -48,8 +48,8 @@ export default function VendedorInteractivo() {
 
   useEffect(() => {
     return () => {
-      avatar.current?.stop();
-      avatar.current?.close();
+      avatar.current?.stopAvatar();
+      avatar.current?.closeVoiceChat();
     };
   }, []);
 
@@ -98,8 +98,10 @@ export default function VendedorInteractivo() {
   }
 
   async function reloadKnowledgeBase() {
-    await avatar.current?.stop();
-    await avatar.current?.close();
+
+    await avatar.current?.stopAvatar();
+    await avatar.current?.closeVoiceChat();
+
     setData(undefined);
     await startSession();
   }
