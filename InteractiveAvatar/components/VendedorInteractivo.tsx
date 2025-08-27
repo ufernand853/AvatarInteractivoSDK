@@ -31,6 +31,13 @@ export default function VendedorInteractivo() {
     Azul: "blue",
   };
 
+  const [language, setLanguage] = useState("es");
+  const colorMap: Record<string, string> = {
+    Rojo: "red",
+    Verde: "green",
+    Azul: "blue",
+  };
+
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -76,6 +83,7 @@ export default function VendedorInteractivo() {
 
     setKnowledgeBaseText(knowledgeBase);
 
+
     const res = await avatar.current.createStartAvatar({
       quality: AvatarQuality.Low,
       avatarName: "Ann_Therapist_public",
@@ -117,11 +125,13 @@ export default function VendedorInteractivo() {
         >
           <track kind="captions" />
         </video>
+
         <div className="mt-4 flex flex-col items-center gap-2">
           <select
             className="px-2 py-1 border border-gray-300 rounded"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
+
           >
             {STT_LANGUAGE_LIST.map((lang) => (
               <option key={lang.key} value={lang.key}>
@@ -138,11 +148,13 @@ export default function VendedorInteractivo() {
             </button>
           )}
         </div>
+
         {knowledgeBaseText && (
           <div className="mt-4 max-w-xl text-xs text-gray-700 whitespace-pre-line p-2 border rounded">
             {knowledgeBaseText}
           </div>
         )}
+
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
       {cart.length > 0 && (
