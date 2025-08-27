@@ -55,6 +55,9 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
   const sizes = ["S", "M", "L", "XL"];
   const borderColor = COLOR_MAP[selectedColor] || "transparent";
 
+  const borderColor = COLOR_MAP[selectedColor] || "transparent";
+
+
   return (
     <div className="w-[300px] p-4 bg-gray-900 text-white rounded-xl shadow-lg flex flex-col gap-4">
       <h3 className="text-lg font-bold">Agregar Producto</h3>
@@ -122,7 +125,9 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
       </select>
 
       {title && (
+
         <div className="p-2 border rounded" style={{ borderColor }}>
+
           <p className="font-bold">{title}</p>
           {description && <p className="text-sm">{description}</p>}
           {selectedColor && <p className="text-sm">Color: {selectedColor}</p>}
