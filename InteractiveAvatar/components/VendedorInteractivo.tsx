@@ -23,6 +23,13 @@ export default function VendedorInteractivo() {
   const avatar = useRef<StreamingAvatar | null>(null);
   const [showPanel, setShowPanel] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [language, setLanguage] = useState("es");
+  const [knowledgeBaseText, setKnowledgeBaseText] = useState("");
+  const colorMap: Record<string, string> = {
+    Rojo: "red",
+    Verde: "green",
+    Azul: "blue",
+  };
 
   const [language, setLanguage] = useState("es");
   const colorMap: Record<string, string> = {
@@ -73,6 +80,9 @@ export default function VendedorInteractivo() {
       .map((p) => `${p.title}: ${p.description}`)
       .join(". ");
     const knowledgeBase = `Eres un vendedor que ofrece los siguientes productos: ${productInfo}. Ayuda al cliente a escoger de forma cordial.`;
+
+    setKnowledgeBaseText(knowledgeBase);
+
 
     const res = await avatar.current.createStartAvatar({
       quality: AvatarQuality.Low,
@@ -138,6 +148,13 @@ export default function VendedorInteractivo() {
             </button>
           )}
         </div>
+
+        {knowledgeBaseText && (
+          <div className="mt-4 max-w-xl text-xs text-gray-700 whitespace-pre-line p-2 border rounded">
+            {knowledgeBaseText}
+          </div>
+        )}
+
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
       {cart.length > 0 && (
