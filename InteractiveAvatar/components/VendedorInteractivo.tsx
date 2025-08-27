@@ -29,11 +29,17 @@ export default function VendedorInteractivo() {
   const [language, setLanguage] = useState("es");
 
 
+  const availableColors = Object.keys(COLOR_MAP).join(", ");
+  const availableSizes = ["S", "M", "L", "XL"].join(", ");
   const productInfo = productImages
-    .map((p) => `${p.title}: ${p.description}`)
-    .join(". ");
+    .map(
+      (p) =>
+        `${p.title}: ${p.description}. Más info en ${p.link}. Colores disponibles: ${availableColors}. Talles disponibles: ${availableSizes}.`,
+    )
+    .join(" ");
   const defaultKnowledgeBase = [
-    `Eres un vendedor que ofrece los siguientes productos: ${productInfo}.`,
+    `Eres un vendedor que ofrece los siguientes productos: ${productInfo}`,
+
     "Ayuda al cliente a escoger de forma cordial.",
   ].join(" ");
   const [knowledgeBaseText, setKnowledgeBaseText] =
@@ -167,7 +173,8 @@ export default function VendedorInteractivo() {
           )}
         </div>
         <textarea
-          className="mt-4 max-w-xl w-full text-xs text-gray-700 p-2 border rounded"
+
+          className="mt-4 max-w-xl w-full text-xs text-gray-800 p-2 border rounded bg-gray-100"
           rows={4}
           value={knowledgeBaseText}
           onChange={(e) => setKnowledgeBaseText(e.target.value)}
