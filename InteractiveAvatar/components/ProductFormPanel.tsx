@@ -53,9 +53,8 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
 
   const colors = Object.keys(COLOR_MAP);
   const sizes = ["S", "M", "L", "XL"];
-  const cssColor = COLOR_MAP[selectedColor] || "transparent";
 
-  const cssColor = COLOR_MAP[selectedColor] || "transparent";
+  const borderColor = COLOR_MAP[selectedColor] || "transparent";
 
 
   return (
@@ -125,7 +124,9 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
       </select>
 
       {title && (
-        <div className="p-2 border rounded" style={{ borderColor: cssColor }}>
+
+        <div className="p-2 border rounded" style={{ borderColor }}>
+
           <p className="font-bold">{title}</p>
           {description && <p className="text-sm">{description}</p>}
           {selectedColor && <p className="text-sm">Color: {selectedColor}</p>}

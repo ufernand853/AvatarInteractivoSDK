@@ -39,7 +39,6 @@ export default function VendedorInteractivo() {
   const [knowledgeBaseText, setKnowledgeBaseText] =
     useState(defaultKnowledgeBase);
 
-
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -171,7 +170,6 @@ export default function VendedorInteractivo() {
           value={knowledgeBaseText}
           onChange={(e) => setKnowledgeBaseText(e.target.value)}
         />
-
       </div>
       {showPanel && <ProductFormPanel onAdd={handleAddProduct} />}
       {cart.length > 0 && (
