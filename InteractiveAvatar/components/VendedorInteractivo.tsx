@@ -9,6 +9,9 @@ import StreamingAvatar, {
 import ProductFormPanel, {
   ProductSelection,
   productImages,
+
+  COLOR_MAP,
+
 } from "./ProductFormPanel";
 
 import { detectarUrlDesdeMensaje } from "@/app/utils/detectarUrlDesdeMensaje";
@@ -25,18 +28,6 @@ export default function VendedorInteractivo() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [language, setLanguage] = useState("es");
   const [knowledgeBaseText, setKnowledgeBaseText] = useState("");
-  const colorMap: Record<string, string> = {
-    Rojo: "red",
-    Verde: "green",
-    Azul: "blue",
-  };
-
-  const [language, setLanguage] = useState("es");
-  const colorMap: Record<string, string> = {
-    Rojo: "red",
-    Verde: "green",
-    Azul: "blue",
-  };
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -83,7 +74,6 @@ export default function VendedorInteractivo() {
 
     setKnowledgeBaseText(knowledgeBase);
 
-
     const res = await avatar.current.createStartAvatar({
       quality: AvatarQuality.Low,
       avatarName: "Ann_Therapist_public",
@@ -125,13 +115,11 @@ export default function VendedorInteractivo() {
         >
           <track kind="captions" />
         </video>
-
         <div className="mt-4 flex flex-col items-center gap-2">
           <select
             className="px-2 py-1 border border-gray-300 rounded"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-
           >
             {STT_LANGUAGE_LIST.map((lang) => (
               <option key={lang.key} value={lang.key}>
@@ -148,7 +136,6 @@ export default function VendedorInteractivo() {
             </button>
           )}
         </div>
-
         {knowledgeBaseText && (
           <div className="mt-4 max-w-xl text-xs text-gray-700 whitespace-pre-line p-2 border rounded">
             {knowledgeBaseText}
@@ -166,7 +153,8 @@ export default function VendedorInteractivo() {
                 <span
                   className="w-3 h-3 rounded-full"
                   style={{
-                    backgroundColor: colorMap[item.color] || "transparent",
+
+                    backgroundColor: COLOR_MAP[item.color] || "transparent",
                   }}
                 />
                 {item.title} - {item.color} {item.size}

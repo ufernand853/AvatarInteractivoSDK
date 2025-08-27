@@ -39,20 +39,23 @@ export const productImages = [
   },
 ];
 
+export const COLOR_MAP: Record<string, string> = {
+  Rojo: "red",
+  Verde: "green",
+  Azul: "blue",
+};
+
 export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
 
-  const colors = ["Rojo", "Verde", "Azul"];
+  const colors = Object.keys(COLOR_MAP);
   const sizes = ["S", "M", "L", "XL"];
-  const colorMap: Record<string, string> = {
-    Rojo: "red",
-    Verde: "green",
-    Azul: "blue",
-  };
-  const cssColor = colorMap[selectedColor] || "transparent";
+
+  const cssColor = COLOR_MAP[selectedColor] || "transparent";
+
 
   return (
     <div className="w-[300px] p-4 bg-gray-900 text-white rounded-xl shadow-lg flex flex-col gap-4">
