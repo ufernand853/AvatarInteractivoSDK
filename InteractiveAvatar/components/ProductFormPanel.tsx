@@ -15,7 +15,7 @@ interface ProductFormPanelProps {
   onAdd?: (product: ProductSelection) => void;
 }
 
-const productImages = [
+export const productImages = [
   {
     src: "/images/product1.jpg",
     link: "https://example.com/product1",
@@ -39,13 +39,19 @@ const productImages = [
   },
 ];
 
+export const COLOR_MAP: Record<string, string> = {
+  Rojo: "red",
+  Verde: "green",
+  Azul: "blue",
+};
+
 export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
 
-  const colors = ["Rojo", "Verde", "Azul"];
+  const colors = Object.keys(COLOR_MAP);
   const sizes = ["S", "M", "L", "XL"];
 
   return (
@@ -113,6 +119,18 @@ export default function ProductFormPanel({ onAdd }: ProductFormPanelProps) {
           <option key={size}>{size}</option>
         ))}
       </select>
+
+      {title && (
+        <div
+          className="p-2 border rounded"
+          style={{ borderColor: COLOR_MAP[selectedColor] || "transparent" }}
+        >
+          <p className="font-bold">{title}</p>
+          {description && <p className="text-sm">{description}</p>}
+          {selectedColor && <p className="text-sm">Color: {selectedColor}</p>}
+          {selectedSize && <p className="text-sm">Tamaño: {selectedSize}</p>}
+        </div>
+      )}
 
       <button
         className="mt-2 bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded"
