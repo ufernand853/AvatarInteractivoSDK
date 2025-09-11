@@ -45,6 +45,17 @@ export default function InteractiveAvatar() {
   const [language, setLanguage] = useState<string>('en');
   const [patientId, setPatientId] = useState<string>("");
 
+  // Estado para gestionar medicaciones programadas
+  interface Medication {
+    id: number;
+    name: string;
+    time: string; // formato HH:MM
+    timeoutId: number;
+  }
+  const [medicationName, setMedicationName] = useState<string>("");
+  const [medicationTime, setMedicationTime] = useState<string>("");
+  const [medications, setMedications] = useState<Medication[]>([]);
+
   const [data, setData] = useState<StartAvatarResponse>();
   const [text, setText] = useState<string>("");
   const mediaStream = useRef<HTMLVideoElement>(null);
@@ -94,6 +105,41 @@ export default function InteractiveAvatar() {
 
   const toggleTaskType = () => {
     setTaskType(prevType => prevType === TaskType.TALK ? TaskType.REPEAT : TaskType.TALK);
+  };
+
+  // Programa una alerta para una medicación en un horario dado
+  const scheduleMedication = (name: string, time: string): number => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const now = new Date();
+    const target = new Date();
+    target.setHours(hours, minutes, 0, 0);
+    if (target.getTime() <= now.getTime()) {
+      target.setDate(target.getDate() + 1); // si ya pasó, agenda para el día siguiente
+    }
+    const diff = target.getTime() - now.getTime();
+    return window.setTimeout(() => {
+      handleMedicationAlert(name);
+    }, diff);
+  };
+
+  // Inicia una sesión del avatar y anuncia la medicación correspondiente
+  const handleMedicationAlert = async (name: string) => {
+    await startSession();
+    await handleCustomAction(`Es hora de tomar ${name}`);
+  };
+
+  const addMedication = () => {
+    if (!medicationName || !medicationTime) return;
+    const timeoutId = scheduleMedication(medicationName, medicationTime);
+    const newMed: Medication = {
+      id: Date.now(),
+      name: medicationName,
+      time: medicationTime,
+      timeoutId,
+    };
+    setMedications([...medications, newMed]);
+    setMedicationName("");
+    setMedicationTime("");
   };
   
   async function fetchAccessToken() {
@@ -152,8 +198,7 @@ export default function InteractiveAvatar() {
   // ✅ Function to load knowledge base from file
   async function fetchKnowledgeBase(profileText: string) {
     try {
-      //const res = await fetch("/knowledgeBaseDedicar.txt");
-      const res = await fetch("/knowledgeBasePernod.txt");
+      const res = await fetch("/knowledgeBaseDedicar.txt");
       const text = await res.text();
   
       const combined = profileText + "\n" + text;
@@ -816,6 +861,36 @@ async function activarMensaje() {
                     </SelectItem>
                   ))}
                 </Select>
+
+                <p className="text-sm font-medium leading-none mt-4">
+                  Agregar medicación
+                </p>
+                <Input
+                  placeholder="Nombre de la medicación"
+                  value={medicationName}
+                  onChange={(e) => setMedicationName(e.target.value)}
+                />
+                <Input
+                  type="time"
+                  placeholder="Hora"
+                  value={medicationTime}
+                  onChange={(e) => setMedicationTime(e.target.value)}
+                />
+                <Button
+                  className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white"
+                  size="sm"
+                  variant="shadow"
+                  onPress={addMedication}
+                >
+                  Agregar
+                </Button>
+                {medications.length > 0 && (
+                  <ul className="list-disc pl-5 text-sm">
+                    {medications.map((m) => (
+                      <li key={m.id}>{m.name} - {m.time}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <Button
                 className="bg-gradient-to-tr from-indigo-500 to-indigo-300 w-full text-white"
