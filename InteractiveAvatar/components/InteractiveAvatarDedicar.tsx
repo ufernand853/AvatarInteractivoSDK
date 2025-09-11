@@ -131,21 +131,33 @@ export default function InteractiveAvatar() {
       console.error("Error sending log message:", error);
     }
   }
-  
+
+  async function fetchPatientProfile(id: string) {
+    try {
+      const res = await fetch(`/api/patient/${id}`);
+      const profile = await res.text();
+      console.log("🧍‍♂️ Cargando perfil del paciente:", profile);
+      return profile;
+    } catch (error) {
+      console.error("🚨 Error al cargar perfil del paciente:", error);
+      return "";
+    }
+  }
 
   // ✅ Function to load knowledge base from file
-  async function fetchKnowledgeBase() {
+  async function fetchKnowledgeBase(profileText: string) {
     try {
       //const res = await fetch("/knowledgeBaseDedicar.txt");
       const res = await fetch("/knowledgeBasePernod.txt");
       const text = await res.text();
   
-      console.log("📂 Cargando Knowledge Base:", text);
-  
-      setKnowledgeBase(text); // Estado React (puede ser lento)
-      knowledgeBaseRef.current = text; // Ref (se actualiza inmediatamente)
-  
-      return text; // Devolvemos el valor cargado para usarlo en startSession()
+      const combined = profileText + "\n" + text;
+      console.log("📂 Cargando Knowledge Base:", combined);
+
+      setKnowledgeBase(combined); // Estado React (puede ser lento)
+      knowledgeBaseRef.current = combined; // Ref (se actualiza inmediatamente)
+
+      return combined; // Devolvemos el valor cargado para usarlo en startSession()
     } catch (error) {
       console.error("🚨 Error al cargar knowledge base:", error);
       return "";
@@ -155,7 +167,8 @@ export default function InteractiveAvatar() {
 
   async function startSession() {
     setIsLoadingSession(true);
-    await fetchKnowledgeBase(); // ✅ Load the knowledge base before initializing
+    const profileText = knowledgeId ? await fetchPatientProfile(knowledgeId) : "";
+    await fetchKnowledgeBase(profileText); // ✅ Load the knowledge base before initializing
     const newToken = await fetchAccessToken();
 
     avatar.current = new StreamingAvatar({
