@@ -43,6 +43,7 @@ export default function InteractiveAvatar() {
   const knowledgeBaseRef = useRef<string>("");
   const [avatarId, setAvatarId] = useState<string>("");
   const [language, setLanguage] = useState<string>('en');
+  const [patientId, setPatientId] = useState<string>("");
 
   const [data, setData] = useState<StartAvatarResponse>();
   const [text, setText] = useState<string>("");
@@ -112,18 +113,22 @@ export default function InteractiveAvatar() {
     return "";
   }
 
-  async function saveToLogFile(message : string) {
+  async function saveToLogFile(
+    patientId: string,
+    event: string,
+    payload: Record<string, any> = {}
+  ) {
     try {
-      const response = await fetch('/api/add-log-record', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
+      const response = await fetch("/api/add-log-record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientId, data: { event, ...payload } }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("Log response:", data);
       return data;
@@ -167,10 +172,12 @@ export default function InteractiveAvatar() {
       
     });
     avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
-      saveToLogFile(`AVATAR message Completo : ${textoAcumulado.current}`);
+      saveToLogFile(patientId, "avatar_message", {
+        message: `AVATAR message Completo : ${textoAcumulado.current}`,
+      });
       //textoAcumulado.current="";
       //console.log("Avatar stopped talking", e);
-      
+
     });
     avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
       console.log("Stream disconnected");
@@ -292,11 +299,16 @@ export default function InteractiveAvatar() {
    
     } catch (error) {
       console.log("Error" + error);
-    }finally {
-      // Guardar en log
-      saveToLogFile(`User message: ${receivedMessage}`);
     }
-  
+
+    if (/help|ayuda/i.test(receivedMessage)) {
+      saveToLogFile(patientId, "help_request", { message: receivedMessage });
+    } else if (!receivedMessage.trim()) {
+      saveToLogFile(patientId, "incoherent_response", { message: receivedMessage });
+    } else {
+      saveToLogFile(patientId, "user_message", { message: receivedMessage });
+    }
+
   });
 
   /* ── util ── */
@@ -735,7 +747,15 @@ async function activarMensaje() {
             </div>
           ) : !isLoadingSession ? (
             <div className="h-full justify-center items-center flex flex-col gap-8 w-[500px] self-center">
-              <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-2 w-full">
+                <p className="text-sm font-medium leading-none">
+                  Patient ID
+                </p>
+                <Input
+                  placeholder="Enter patient ID"
+                  value={patientId}
+                  onChange={(e) => setPatientId(e.target.value)}
+                />
                 <p className="text-sm font-medium leading-none">
                   Custom Knowledge ID (optional)
                 </p>
