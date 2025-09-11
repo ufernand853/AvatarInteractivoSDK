@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     telefono: { type: String },
     prefijo: { type: String },
     pais: { type: String },
+    avatarId: { type: String },
     correo: { type: String, required: true, unique: true },
     contraseña: { type: String, required: true }
 });

@@ -28,6 +28,9 @@ export default function VendedorInteractivo() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [language, setLanguage] = useState("es");
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState('');
+
 
   const availableColors = Object.keys(COLOR_MAP).join(", ");
   const availableSizes = ["S", "M", "L", "XL"].join(", ");
@@ -44,6 +47,13 @@ export default function VendedorInteractivo() {
   ].join(" ");
   const [knowledgeBaseText, setKnowledgeBaseText] =
     useState(defaultKnowledgeBase);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/usuarios')
+      .then((res) => res.json())
+      .then(setUsers)
+      .catch((err) => console.error('Error fetching users:', err));
+  }, []);
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -143,6 +153,18 @@ export default function VendedorInteractivo() {
           <track kind="captions" />
         </video>
         <div className="mt-4 flex flex-col items-center gap-2">
+          <select
+            className="px-2 py-1 border border-gray-300 rounded"
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+          >
+            <option value="">Seleccione un paciente</option>
+            {users.map((u) => (
+              <option key={u._id} value={u._id}>
+                {u.nickname || u.nombre}
+              </option>
+            ))}
+          </select>
           <select
             className="px-2 py-1 border border-gray-300 rounded"
             value={language}

@@ -7,6 +7,7 @@ function CreateUser() {
   const [telefono, setTelefono] = useState('');
   const [prefijo, setPrefijo] = useState('');
   const [pais, setPais] = useState('');
+  const [avatarId, setAvatarId] = useState('');
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
 
@@ -23,12 +24,15 @@ function CreateUser() {
           telefono,
           prefijo,
           pais,
+          avatarId,
           correo,
           contraseña
         })
       });
       if (response.ok) {
+        const data = await response.json();
         alert('✅ Usuario creado correctamente');
+        window.location.href = `http://localhost:3000?userId=${data._id}`;
       } else {
         alert('❌ Error al crear usuario');
       }
@@ -103,6 +107,9 @@ function CreateUser() {
 
         <label style={labelStyle}>País:</label>
         <input style={inputStyle} type="text" value={pais} onChange={(e) => setPais(e.target.value)} />
+
+        <label style={labelStyle}>ID del Avatar:</label>
+        <input style={inputStyle} type="text" value={avatarId} onChange={(e) => setAvatarId(e.target.value)} />
 
         <label style={labelStyle}>Correo:</label>
         <input style={inputStyle} type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} />
