@@ -447,7 +447,7 @@ async function activarMensaje() {
         //avatarName: "Abigail_expressive_2024112501",
         //knowledgeId: "9ede796b30e642a9ada046b682af068d", // Or use a custom `knowledgeBase`.
         //avatarName: "Bryan_IT_Sitting_public",
-        avatarName: "Graham_Black_Shirt_public",
+        avatarName: "Ann_Therapist_public",
         knowledgeBase: knowledgeBaseRef.current,
         voice: {
           //voiceId: "6af064a4367c4e1385ece1573ba832f4",
