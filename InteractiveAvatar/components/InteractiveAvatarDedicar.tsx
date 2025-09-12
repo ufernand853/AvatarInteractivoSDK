@@ -213,7 +213,9 @@ export default function InteractiveAvatar() {
 
   async function startSession() {
     setIsLoadingSession(true);
-    const profileText = knowledgeId ? await fetchPatientProfile(knowledgeId) : "";
+    const fetchedProfile = knowledgeId ? await fetchPatientProfile(knowledgeId) : "";
+    const profileText = `Nombre del paciente: ${patientId}` +
+      (fetchedProfile ? `\n${fetchedProfile}` : "");
     await fetchKnowledgeBase(profileText); // ✅ Load the knowledge base before initializing
     const newToken = await fetchAccessToken();
 
@@ -484,9 +486,8 @@ async function activarMensaje() {
         setDebug(e.message);
       });*/
 
-      //Switch to voice mode again
-      await handleCustomAction("Hola")
-
+      //Switch to voice mode again with personalized greeting
+      await handleCustomAction(`Hola, ¿cómo estás ${patientId}?`);
       setChatMode("voice_mode");
 
       //handleStartListening(); //Para de Escuchar
@@ -777,9 +778,6 @@ async function activarMensaje() {
                 </p>
               </div>
 
-                <Button onPress={() => playVideo("demo")}>Ver Demo</Button>
-                <Button onPress={() => playVideo("productoA")}>Producto A</Button>
-                <Button onPress={() => playVideo("productoB")}>Producto B</Button>
                 <Button
                   className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white rounded-lg"
                   size="md"
