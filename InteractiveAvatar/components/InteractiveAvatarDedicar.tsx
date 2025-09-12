@@ -11,8 +11,6 @@ import {
   CardFooter,
   Divider,
   Input,
-  Select,
-  SelectItem,
   Spinner,
   Chip,
   Tabs,
@@ -23,7 +21,6 @@ import { useMemoizedFn, usePrevious } from "ahooks";
 
 import InteractiveAvatarTextInput from "./InteractiveAvatarTextInput";
 
-import {AVATARS, STT_LANGUAGE_LIST} from "@/app/lib/constants";
 
 import { Microphone } from "@phosphor-icons/react";
 import { Switch } from "@nextui-org/react"; 
@@ -41,8 +38,7 @@ export default function InteractiveAvatar() {
   const [knowledgeId, setKnowledgeId] = useState<string>("");
   const [knowledgeBase, setKnowledgeBase] = useState<string>("");
   const knowledgeBaseRef = useRef<string>("");
-  const [avatarId, setAvatarId] = useState<string>("");
-  const [language, setLanguage] = useState<string>('en');
+  const language = 'es';
   const [patientId, setPatientId] = useState<string>("");
 
   // Estado para gestionar medicaciones programadas
@@ -198,7 +194,7 @@ export default function InteractiveAvatar() {
   // ✅ Function to load knowledge base from file
   async function fetchKnowledgeBase(profileText: string) {
     try {
-      const res = await fetch("/knowledgeBaseDedicar.txt");
+      const res = await fetch("/knowledgeBaseAdultosMayores.txt");
       const text = await res.text();
   
       const combined = profileText + "\n" + text;
@@ -448,11 +444,10 @@ async function activarMensaje() {
       console.log("createStartAvatar");
       const res = await avatar.current.createStartAvatar({
         quality: AvatarQuality.Low,
-        //avatarName: avatarId,
         //avatarName: "Abigail_expressive_2024112501",
         //knowledgeId: "9ede796b30e642a9ada046b682af068d", // Or use a custom `knowledgeBase`.
         //avatarName: "Bryan_IT_Sitting_public",
-        avatarName: "Graham_Black_Shirt_public",
+        avatarName: "Ann_Therapist_public",
         knowledgeBase: knowledgeBaseRef.current,
         voice: {
           //voiceId: "6af064a4367c4e1385ece1573ba832f4",
@@ -822,45 +817,6 @@ async function activarMensaje() {
                   value={knowledgeId}
                   onChange={(e) => setKnowledgeId(e.target.value)}
                 />
-                <p className="text-sm font-medium leading-none">
-                  Custom Avatar ID (optional)
-                </p>
-                <Input
-                  placeholder="Enter a custom avatar ID"
-                  value={avatarId}
-                  onChange={(e) => setAvatarId(e.target.value)}
-                />
-                <Select
-                  placeholder="Or select one from these example avatars"
-                  size="md"
-                  onChange={(e) => {
-                    setAvatarId(e.target.value);
-                  }}
-                >
-                  {AVATARS.map((avatar) => (
-                    <SelectItem
-                      key={avatar.avatar_id}
-                      textValue={avatar.avatar_id}
-                    >
-                      {avatar.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  label="Select language"
-                  placeholder="Select language"
-                  className="max-w-xs"
-                  selectedKeys={[language]}
-                  onChange={(e) => {
-                    setLanguage(e.target.value);
-                  }}
-                >
-                  {STT_LANGUAGE_LIST.map((lang) => (
-                    <SelectItem key={lang.key}>
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </Select>
 
                 <p className="text-sm font-medium leading-none mt-4">
                   Agregar medicación
